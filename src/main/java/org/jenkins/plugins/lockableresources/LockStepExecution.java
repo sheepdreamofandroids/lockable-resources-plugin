@@ -82,18 +82,18 @@ public class LockStepExecution extends AbstractStepExecutionImpl {
 			BodyInvoker bodyInvoker = context.newBodyInvoker().
 				withCallback(new Callback(resourcenames, resourceDescription, inversePrecedence)).
 				withDisplayName(null);
-			if(variable != null && variable.length()>0)
+			if(variable != null && variable.length()>0) {
+				final String resources = COMMA_JOINER.join(resourcenames);
 				// set the variable for the duration of the block
 				bodyInvoker.withContext(EnvironmentExpander.merge(context.get(EnvironmentExpander.class), new EnvironmentExpander() {
 					@Override
 					public void expand(EnvVars env) throws IOException, InterruptedException {
-						final String resources = COMMA_JOINER.join(resourcenames);
-								LOGGER.finest("Setting [" + variable + "] to [" + resources
-										+ "] for the duration of the block");
-						
+						LOGGER.finest("Setting [" + variable + "] to [" + resources + "] for the duration of the block");
+
 						env.override(variable, resources);
 					}
 				}));
+			}
 			bodyInvoker.start();
 		} catch (IOException | InterruptedException e) {
 			throw new RuntimeException(e);
